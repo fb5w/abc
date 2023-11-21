@@ -1,45 +1,44 @@
 import pandas as pd
-import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC, LinearSVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn import metrics
-from sklearn import preprocessing
-
+import seaborn as sns
 
 df = pd.read_csv('emails.csv')
-
-df.info()
-
 df.head()
 
-df.dtypes
+df.isnull().sum()
 
-df.drop(columns=['Email No.'], inplace=True)
+df.dropna(how='any',inplace=True)
 
-df.isna().sum()
+x = df.iloc[:,1:-1].values
+y = df.iloc[:,-1].values
 
-df.describe()
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size=0.25,random_state=10)
 
-X=df.iloc[:, :df.shape[1]-1]       #Independent Variables
-y=df.iloc[:, -1]                   #Dependent Variable
-X.shape, y.shape
+from sklearn.metrics import ConfusionMatrixDisplay,confusion_matrix,accuracy_score,precision_score,recall_score,plot_precision_recall_curve,plot_roc_curve
+def report(classifier):
+    y_pred = classifier.predict(x_test)
+    cm = confusion_matrix(y_test,y_pred)
+    display = ConfusionMatrixDisplay(cm,display_labels=classifier.classes_)
+    display.plot()
+    print(f"Accuracy:  {accuracy_score(y_test,y_pred)}")
+    print(f"Precision Score:  {precision_score(y_test,y_pred)}")
+    print(f"Recall Score:  {recall_score(y_test,y_pred)}")
+    plot_precision_recall_curve(classifier,x_test,y_test)
+    plot_roc_curve(classifier,x_test,y_test)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, random_state=8)
+from sklearn.neighbors import KNeighborsClassifier
+
+kNN = KNeighborsClassifier(n_neighbors=10)
+kNN.fit(x_train,y_train)
+
+report(kNN)
+
+from sklearn.svm import SVC
+svm = SVC(gamma='auto',random_state=10)
+svm.fit(x_train,y_train)
+
+report(svm)
 
 
-models = {
-    "K-Nearest Neighbors": KNeighborsClassifier(n_neighbors=2),
-    "Linear SVM":LinearSVC(random_state=8, max_iter=900000),
-    "Polynomical SVM":SVC(kernel="poly", degree=2, random_state=8),
-    "RBF SVM":SVC(kernel="rbf", random_state=8),
-    "Sigmoid SVM":SVC(kernel="sigmoid", random_state=8)
-}
-
-
-for model_name, model in models.items():
-    y_pred=model.fit(X_train, y_train).predict(X_test)
-    print(f"Accuracy for {model_name} model \t: {metrics.accuracy_score(y_test, y_pred)}")
-
+    
