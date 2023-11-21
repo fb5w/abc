@@ -1,0 +1,23 @@
+def recursive_fibinocci(n):
+    if n<=1:
+        return n
+    else:
+        return recursive_fibinocci(n-1) + recursive_fibinocci(n-2)
+        
+def nonrecursive_fibinocci(n):
+    first = 0
+    second = 1
+    print(first)
+    print(second)
+    while n-2>1:
+        third = first +second
+        first = second
+        second = third
+        print(third)
+        n-=1
+        
+if __name__=="__main__":
+    n=10
+    for i in range(n):
+        print(recursive_fibinocci(i))
+    nonrecursive_fibinocci(n)

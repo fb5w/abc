@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
+from sklearn import preprocessing
+
+
+df = pd.read_csv('diabetes.csv')
+
+
+df.info()
+
+df.head()
+
+df.corr().style.background_gradient(cmap='BuGn')
+
+
+df.drop(['BloodPressure', 'SkinThickness'], axis=1, inplace=True)
+
+df.isna().sum()
+
+df.describe()
+
+hist = df.hist(figsize=(20,16))
+
+
+
+
+
